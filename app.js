@@ -7,6 +7,7 @@ const totalGastosElem = document.getElementById('total-gastos');
 const balanceNetoElem = document.getElementById('balance-neto');
 const fechaInput = document.getElementById('fecha');
 
+// Variable global temporal para saber si estamos editando un ID específico
 let idTransaccionEnEdicion = null;
 
 // Instancias globales de Chart.js
@@ -18,6 +19,7 @@ if (fechaInput) {
     fechaInput.value = new Date().toISOString().split('T')[0];
 }
 
+// Función al cargar la página para pintar las transacciones de localStorage
 actualizarInterfaz();
 
 form.addEventListener('submit', (e) => {
@@ -31,8 +33,8 @@ form.addEventListener('submit', (e) => {
 
     if (idTransaccionEnEdicion !== null) {
         Transaccion.actualizar(idTransaccionEnEdicion, { descripcion, monto, tipo, categoria, fecha });
-        idTransaccionEnEdicion = null; 
-        
+        idTransaccionEnEdicion = null;
+
         const btnSubmit = form.querySelector('button[type="submit"]');
         btnSubmit.textContent = 'Registrar Transacción';
     } else {
@@ -70,6 +72,7 @@ function actualizarInterfaz() {
 
         const fila = document.createElement('tr');
 
+        // Botón de Editar como el de Eliminar en la columna de acciones
         fila.innerHTML = `
             <td class="p-4 pl-1 font-mono text-xs text-gray-500">${t.id}</td>
             <td class="p-4 text-sm text-gray-300">${t.fecha || 'N/A'}</td>
@@ -103,7 +106,7 @@ function renderizarGraficoBarras() {
     const ctx = document.getElementById('chart-barras-categorias')?.getContext('2d');
     if (!ctx) return;
 
-    const categoriasPosibles = ['Sueldo','Servicios','Comida', 'Transporte', 'Entretenimiento', 'Salud', 'Educación', 'Otros'];
+    const categoriasPosibles = ['Sueldo', 'Servicios', 'Comida', 'Transporte', 'Entretenimiento', 'Salud', 'Educación', 'Otros'];
     const acumuladoCategorias = {};
     categoriasPosibles.forEach(cat => acumuladoCategorias[cat] = 0);
 
@@ -161,7 +164,7 @@ function renderizarGraficoLineas() {
 
     fechasUnicas.forEach(fecha => {
         const transaccionesFecha = Transaccion.historial.filter(t => t.fecha === fecha);
-        
+
         const ing = transaccionesFecha
             .filter(t => t.tipo === 'ingreso')
             .reduce((acc, t) => acc + t.monto, 0);
@@ -224,25 +227,28 @@ function renderizarGraficoLineas() {
     });
 }
 
-// Globales de edición/eliminación
-window.prepararEdicion = function(id) {
+// Función global para cargar los datos en el formulario y activar el modo edición
+window.prepararEdicion = function (id) {
     const transaccion = Transaccion.historial.find(t => t.id === Number(id));
     if (!transaccion) return;
 
+    // los inputs con los datos actuales de la transacción 
     document.getElementById('descripcion').value = transaccion.descripcion;
     document.getElementById('monto').value = transaccion.monto;
     document.getElementById('tipo').value = transaccion.tipo;
     document.getElementById('categoria').value = transaccion.categoria;
     fechaInput.value = transaccion.fecha || new Date().toISOString().split('T')[0];
 
+    // ID que estamos editando temporalmente
     idTransaccionEnEdicion = transaccion.id;
-
+    // texto del botón de envío para darle feedback visual al usuario
     const btnSubmit = form.querySelector('button[type="submit"]');
     btnSubmit.textContent = 'Actualizar Transacción';
     form.scrollIntoView({ behavior: 'smooth' });
 };
 
-window.eliminarRegistro = function(id) {
+window.eliminarRegistro = function (id) {
+    // eliminan el registro que se estaba editando hace que se limpie el formulario y resetea el estado
     if (idTransaccionEnEdicion === Number(id)) {
         idTransaccionEnEdicion = null;
         form.reset();
@@ -250,6 +256,10 @@ window.eliminarRegistro = function(id) {
         const btnSubmit = form.querySelector('button[type="submit"]');
         btnSubmit.textContent = 'Registrar Transacción';
     }
+
+    Transaccion.eliminar(id);
+    actualizarInterfaz();
+};
 
     Transaccion.eliminar(id);
     actualizarInterfaz();
