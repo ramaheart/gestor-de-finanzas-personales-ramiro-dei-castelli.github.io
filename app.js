@@ -260,7 +260,3 @@ window.eliminarRegistro = function (id) {
     Transaccion.eliminar(id);
     actualizarInterfaz();
 };
-
-    Transaccion.eliminar(id);
-    actualizarInterfaz();
-};
