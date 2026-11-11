@@ -24,6 +24,7 @@ export class Transaccion {
         Transaccion.guardarEnStorage();
     }
 
+    // Método estático para actualizar una transacción existente buscando por su ID
     static actualizar(id, nuevosDatos) {
         const index = Transaccion.historial.findIndex(t => t.id === Number(id));
         if (index !== -1) {
