@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor De Finanzas Personales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="flex flex-col w-full bg-gray-950 text-gray-300 items-center py-6">
+
+    <div class="w-full max-w-4xl space-y-12 px-4 sm:px-0">
+
+        <!-- Título -->
+        <header class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm flex justify-between items-center">
+            <h1 class="text-gray-100 font-bold text-3xl sm:text-4xl">Gestor de Finanzas</h1>
+            <p class="text-gray-100 font-bold text-sm sm:text-base">IEFI</p>
+        </header>
+
+        <!-- Balance global -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Ingresos Totales</h3>
+                <p id="total-ingresos" class="text-2xl font-extrabold text-emerald-400">$0.00</p>
+            </div>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Gastos Totales</h3>
+                <p id="total-gastos" class="text-2xl font-extrabold text-rose-400">$0.00</p>
+            </div>
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Balance Neto</h3>
+                <p id="balance-neto" class="text-2xl font-extrabold text-blue-400">$0.00</p>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-sm">
+            <h2 class="text-lg font-bold text-gray-100 mb-4">Registrar Movimiento</h2>
+
+            <form id="form-transaccion" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="sm:col-span-2">
+                    <label class="block text-gray-400 font-medium mb-1.5 text-sm" for="descripcion">Descripción</label>
+                    <input
+                        class="w-full bg-gray-950 border border-gray-700/60 rounded-lg py-2.5 px-3.5 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="text" id="descripcion" placeholder="Descripción del movimiento" required>
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-medium mb-1.5 text-sm" for="monto">Monto</label>
+                    <input
+                        class="w-full bg-gray-950 border border-gray-700/60 rounded-lg py-2.5 px-3.5 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="number" id="monto" placeholder="0.00" step="0.01" required>
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-medium mb-1.5 text-sm" for="tipo">Tipo</label>
+                    <select
+                        class="w-full bg-gray-950 border border-gray-700/60 rounded-lg py-2.5 px-3.5 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        id="tipo" required>
+                        <option value="ingreso" class="bg-gray-950">Ingreso</option>
+                        <option value="gasto" class="bg-gray-950">Gasto</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-medium mb-1.5 text-sm" for="categoria">Categoría</label>
+                    <select
+                        class="w-full bg-gray-950 border border-gray-700/60 rounded-lg py-2.5 px-3.5 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        id="categoria" required>
+                        <option value="Sueldo" class="bg-gray-950">Sueldo</option>
+                        <option value="Comida" class="bg-gray-950">Comida</option>
+                        <option value="Transporte" class="bg-gray-950">Transporte</option>
+                        <option value="Entretenimiento" class="bg-gray-950">Entretenimiento</option>
+                        <option value="Salud" class="bg-gray-950">Salud</option>
+                        <option value="Servicios" class="bg-gray-950">Servicios</option>
+                        <option value="Educación" class="bg-gray-950">Educación</option>
+                        <option value="Otros" class="bg-gray-950">Otros</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-400 font-medium mb-1.5 text-sm" for="fecha">Fecha</label>
+                    <input
+                        class="w-full bg-gray-950 border border-gray-700/60 rounded-lg py-2.5 px-3.5 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        type="date" id="fecha" required>
+                </div>
+                <div class="sm:col-span-2 pt-2">
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition shadow-sm cursor-pointer">Registrar
+                        Transacción</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Gráfico de Barras por Categorías -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
+            <h2 class="text-xl font-bold text-gray-100 mb-4">Resumen por Categorías</h2>
+            <div class="relative w-full h-72">
+                <canvas id="chart-barras-categorias"></canvas>
+            </div>
+        </div>
+
+        <!-- Gráfico de Líneas (Evolución Temporal) -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
+            <h2 class="text-xl font-bold text-gray-100 mb-4">Evolución Temporal</h2>
+            <div class="relative w-full h-80">
+                <canvas id="chart-lineas-evolucion"></canvas>
+            </div>
+        </div>
+        <!-- Historial de movimientos -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 shadow-sm">
+            <h2 class="text-xl font-bold text-gray-100 mb-4">Historial de Movimientos</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full whitespace-nowrap text-left text-gray-400">
+                    <thead class="text-gray-300 border-b border-gray-700/50">
+                        <tr>
+                            <th class="p-4 pl-1 font-semibold">ID</th>
+                            <th class="p-4 font-semibold">Fecha</th>
+                            <th class="p-4 font-semibold">Descripción</th>
+                            <th class="p-4 font-semibold">Categoría</th>
+                            <th class="p-4 font-semibold">Tipo</th>
+                            <th class="p-4 font-semibold">Monto</th>
+                            <th class="p-4 pr-1 text-right font-semibold">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-movimientos" class="divide-gray-700/50 divide-y">
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                No hay carga financiera registrada.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer class="text-center text-gray-500 text-sm">
+            <p>&copy; 2026 Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
